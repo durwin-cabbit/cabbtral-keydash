@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cabbtral Beta | Key Management Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">C</div>
+                <h1>Cabbtral<span>Beta</span></h1>
+            </div>
+            <nav>
+                <a href="#" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="#"><i data-lucide="key"></i> Keys</a>
+                <a href="#"><i data-lucide="settings"></i> Settings</a>
+                <a href="#"><i data-lucide="help-circle"></i> Support</a>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">AD</div>
+                <div class="user-info">
+                    <p class="name">Admin User</p>
+                    <p class="role">System Administrator</p>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <div class="search-bar">
+                    <i data-lucide="search"></i>
+                    <input type="text" placeholder="Search keys...">
+                </div>
+                <div class="actions">
+                    <button id="generate-btn" class="btn-primary">
+                        <i data-lucide="plus"></i> Generate Key
+                    </button>
+                </div>
+            </header>
+
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i data-lucide="key"></i></div>
+                    <div class="stat-data">
+                        <p class="stat-label">Total Keys</p>
+                        <h2 id="total-keys">0</h2>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i data-lucide="check-circle"></i></div>
+                    <div class="stat-data">
+                        <p class="stat-label">Active Keys</p>
+                        <h2 id="active-keys">0</h2>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red"><i data-lucide="slash"></i></div>
+                    <div class="stat-data">
+                        <p class="stat-label">Inactive Keys</p>
+                        <h2 id="inactive-keys">0</h2>
+                    </div>
+                </div>
+            </section>
+
+            <section class="keys-table-container">
+                <div class="table-header">
+                    <h2>Manage Access Keys</h2>
+                    <div class="table-filters">
+                        <span>Latest first</span>
+                        <i data-lucide="chevron-down"></i>
+                    </div>
+                </div>
+                <table class="keys-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Key</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="keys-tbody">
+                        <!-- Keys will be loaded here -->
+                        <tr class="loading-state">
+                            <td colspan="5">Loading keys...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <div id="toast" class="toast hidden">
+        <i data-lucide="check-circle"></i>
+        <span id="toast-message">Action successful!</span>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
