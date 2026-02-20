@@ -1,4 +1,4 @@
-// script.js - Clean Vercel Implementation
+// script.js - Debugging mode enabled
 document.addEventListener('DOMContentLoaded', () => {
     const keysTbody = document.getElementById('keys-tbody');
     const generateBtn = document.getElementById('generate-btn');
@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
 
-    // The ONLY path for Vercel
-    const apiEndPoint = '/api/api.php';
+    // Use /api/api (Vercel routes this to /api/api.php)
+    const apiEndPoint = '/api/api';
 
     async function fetchKeys() {
         try {
@@ -18,27 +18,32 @@ document.addEventListener('DOMContentLoaded', () => {
             let data;
             try {
                 data = JSON.parse(text);
+                if (Array.isArray(data)) {
+                    renderKeys(data);
+                    updateStats(data);
+                } else if (data.message) {
+                    showError(data.message);
+                }
             } catch (e) {
-                console.error('API Response was not JSON:', text);
-                keysTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">Connected to server, but database is not responding correctly.</td></tr>';
-                return;
-            }
-
-            if (Array.isArray(data)) {
-                renderKeys(data);
-                updateStats(data);
-            } else if (data.message) {
-                keysTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444;">${data.message}</td></tr>`;
+                // SHOW THE RAW ERROR SO WE CAN FIX IT
+                showError("Server returned non-JSON: " + text.substring(0, 100));
+                console.error('Full response:', text);
             }
         } catch (error) {
-            console.error('Fetch error:', error);
-            keysTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #ef4444;">Cannot reach the backend. Check your Internet or deployment status.</td></tr>';
+            showError("Network unreachable: " + error.message);
         }
+    }
+
+    function showError(msg) {
+        keysTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444; font-size: 0.8rem; padding: 2rem;">
+            <strong>ERROR:</strong> ${msg}<br>
+            <small>Check Vercel Environment Variables for DATABASE_URL</small>
+        </td></tr>`;
     }
 
     function renderKeys(keys) {
         if (keys.length === 0) {
-            keysTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No keys found.</td></tr>';
+            keysTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">No keys found. Click generate to start!</td></tr>';
             return;
         }
 
@@ -76,18 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
             generateBtn.disabled = true;
             generateBtn.innerHTML = '<i data-lucide="loader" class="spin"></i>...';
             lucide.createIcons();
-
-            const response = await fetch(`${apiEndPoint}?action=generate`, { method: 'POST' });
-            const result = await response.json();
-
+            const res = await fetch(`${apiEndPoint}?action=generate`, { method: 'POST' });
+            const result = await res.json();
             if (result.success) {
-                showToast('Generated!');
+                showToast('Key Created!');
                 fetchKeys();
             } else {
                 showToast(result.message, 'error');
             }
         } catch (error) {
-            showToast('Error generating key', 'error');
+            showToast('Generation failed', 'error');
         } finally {
             generateBtn.disabled = false;
             generateBtn.innerHTML = '<i data-lucide="plus"></i> Generate Key';
@@ -107,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.deleteKey = async (id) => {
-        if (!confirm('Delete?')) return;
+        if (!confirm('Delete entry?')) return;
         try {
             await fetch(`${apiEndPoint}?action=delete`, {
                 method: 'POST',
